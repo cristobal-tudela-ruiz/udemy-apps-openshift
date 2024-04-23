@@ -1,0 +1,62 @@
+# Este archivo de Docker Compose define los servicios necesarios para la aplicación Udemy
+version: "3.9"
+
+# Define los servicios para el frontend, backend y base de datos de la aplicación
+services:
+  # Servicio para el frontend de la aplicación
+  frontend:
+    image: ctudela/udemy-frontend:latest
+    # Construye la imagen del frontend a partir del contexto del directorio ./frontend/
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    # Expone el puerto del frontend según la variable de entorno FRONTEND_PORT
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    # Conecta el frontend a la red udemy-network
+    networks:
+      - udemy-network
+    # Dependencias del frontend antes de iniciar este servicio
+    depends_on:
+      - backend
+
+  # Servicio para el backend de la aplicación
+  backend:
+    image: ctudela/udemy-backend:latest
+    # Construye la imagen del backend a partir del contexto del directorio ./backend/
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    # Expone el puerto del backend según la variable de entorno BACKEND_PORT
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    # Conecta el backend a la red udemy-network
+    networks:
+      - udemy-network
+    # Dependencias del backend antes de iniciar este servicio
+    depends_on:
+      - postgresql
+
+  # Servicio para la base de datos PostgreSQL
+  postgresql:
+    image: ctudela/udemy-postgresql:latest
+    # Construye la imagen de PostgreSQL a partir del contexto del directorio ./data-base/
+    build:
+      context: ./data-base/
+      dockerfile: Dockerfile
+    # Expone el puerto de PostgreSQL según la variable de entorno POSTGRES_PORT
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    # Variables de entorno para configurar la base de datos PostgreSQL
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    # Conecta PostgreSQL a la red udemy-network
+    networks:
+      - udemy-network
+
+# Define una red personalizada llamada udemy-network con el controlador de red bridge
+networks:
+  udemy-network:
+    driver: bridge
