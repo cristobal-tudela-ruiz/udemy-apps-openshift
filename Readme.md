@@ -41,3 +41,5 @@ Los servicios se conectan a una red personalizada llamada `udemy-network` para f
 ## Uso
 
 Para ejecutar la aplicación con Docker Compose, asegúrate de tener Docker y Docker Compose instalados en tu sistema. Luego, ejecuta el siguiente comando en la raíz del proyecto:
+
+ `docker compose build --no-cache`
